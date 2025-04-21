@@ -1,70 +1,88 @@
-# Getting Started with Create React App
+# ProfitPouch
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+ProfitPouch is a Stock Tracker application tailored for the Pakistan Stock Market. It helps you sign up, log in, track real-time stock prices, record buy and sell transactions, and visualize your portfolio's performance over time.
 
-## Available Scripts
+## Features
+
+- User authentication and data storage with Firebase
+- Real-time price tracking for Pakistani stocks
+- Record and manage buy/sell transactions
+- Portfolio summary with current holdings
+- Responsive, modern UI built with Material UI
+
+## Tech Stack
+
+- React 19
+- Material UI 7
+- Firebase v11 (Authentication & Firestore)
+- React Router v7
+- Create React App (react-scripts)
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm (v8 or higher)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/Arqam7159/profitpouch.git
+cd profitpouch
+
+# Install dependencies
+npm install
+```
+
+### Firebase Configuration
+
+This project uses Firebase for authentication and data storage. By default, the config is in `src/firebase/config.js`. To use your own Firebase project:
+
+1. Create a `.env.local` file in the root directory.
+2. Add the following variables (replace with your credentials):
+   ```env
+   REACT_APP_FIREBASE_API_KEY=your-api-key
+   REACT_APP_FIREBASE_AUTH_DOMAIN=your-auth-domain
+   REACT_APP_FIREBASE_PROJECT_ID=your-project-id
+   REACT_APP_FIREBASE_STORAGE_BUCKET=your-storage-bucket
+   REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-messaging-sender-id
+   REACT_APP_FIREBASE_APP_ID=your-app-id
+   REACT_APP_FIREBASE_MEASUREMENT_ID=your-measurement-id
+   ```
+3. Update `src/firebase/config.js` to use `process.env.REACT_APP_FIREBASE_*` instead of hardcoded values.
+
+### Available Scripts
 
 In the project directory, you can run:
 
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- `npm start`
+  - Runs the app in development mode at [http://localhost:3000](http://localhost:3000)
+- `npm run build`
+  - Builds the app for production to the `build/` folder
+- `npm test`
+  - Launches the test runner in interactive watch mode
+- `npm run eject`
+  - Removes the single build dependency and copies configuration files (one-way operation)
 
 ### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+After building, you can deploy the contents of the `build/` folder to any static hosting service (Netlify, Vercel, GitHub Pages, etc.).
 
-### `npm run build` fails to minify
+## Folder Structure
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```text
+src/
+├── components/      # Reusable UI components
+├── context/         # React Context for auth and trades
+├── firebase/        # Firebase initialization and config
+├── hooks/           # Custom React hooks
+├── pages/           # Route-level pages (Login, Signup, Portfolio, etc.)
+├── assets/          # Static assets (SVGs, images)
+└── index.js         # Entry point
+```
+
+---
+
+Made with ❤️ by the ProfitPouch Team 
