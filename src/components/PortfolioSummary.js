@@ -114,14 +114,14 @@ export default function PortfolioSummary() {
       <Grid item xs={12} md={4}>
         <MetricCard
           title="Portfolio Value"
-          value={`₨ ${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={`${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           icon={<AccountBalanceIcon />}
         />
       </Grid>
       <Grid item xs={12} md={4}>
         <MetricCard
           title="Total Cost"
-          value={`₨ ${totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={`${totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           icon={<ShowChartIcon />}
         />
       </Grid>
@@ -135,10 +135,10 @@ export default function PortfolioSummary() {
                 component="span" 
                 sx={{ 
                   fontWeight: 500,
-                  color: totalPnL >= 0 ? '#00e676' : '#ff1744'
+                  color: totalPnL >= 0 ? '#4ADE80' : '#F87171'
                 }}
               >
-                ₨ {Math.abs(totalPnL).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {Math.abs(totalPnL).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </Typography>
               <Box sx={{ 
                 display: 'flex', 

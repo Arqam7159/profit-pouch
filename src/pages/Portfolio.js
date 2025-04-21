@@ -24,6 +24,8 @@ import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import TradeForm from '../components/TradeForm';
 import PortfolioSummary from '../components/PortfolioSummary';
 import Holdings from '../components/Holdings';
@@ -40,6 +42,44 @@ export default function Portfolio() {
   const [portfolioName, setPortfolioName] = useState("Personal Portfolio");
   const [searchQuery, setSearchQuery] = useState('');
   const { trades } = useContext(TradesContext);
+
+  // Calculate all-time profit using FIFO
+  const allTimeProfit = trades.reduce((acc, trade) => {
+    if (trade.type === 'sell') {
+      // Get all buy trades for this symbol before this sell trade, ordered by date
+      const buyTrades = trades
+        .filter(t => 
+          t.type === 'buy' && 
+          t.symbol === trade.symbol && 
+          new Date(t.date) < new Date(trade.date)
+        )
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .map(t => ({ ...t, remainingQty: t.qty })); // Create copies with remaining quantity
+
+      let remainingQtyToSell = trade.qty;
+      let profitFromThisSale = 0;
+      let i = 0;
+
+      // Process buy trades in FIFO order until we've covered the sell quantity
+      while (remainingQtyToSell > 0 && i < buyTrades.length) {
+        const buyTrade = buyTrades[i];
+        const qtyFromThisBuy = Math.min(buyTrade.remainingQty, remainingQtyToSell);
+        const costBasis = qtyFromThisBuy * buyTrade.price;
+        const saleProceeds = qtyFromThisBuy * trade.price;
+        
+        profitFromThisSale += saleProceeds - costBasis;
+        remainingQtyToSell -= qtyFromThisBuy;
+        buyTrade.remainingQty -= qtyFromThisBuy;
+        
+        if (buyTrade.remainingQty === 0) {
+          i++;
+        }
+      }
+
+      return acc + profitFromThisSale;
+    }
+    return acc;
+  }, 0);
 
   // Get stock prices and symbols
   const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuZLftP7d6Au5d4q7l_NV6oi_7oggj95LMfwZ2t_ZHWHTiKjRzZ7aRYxvvOJHeJk5scWyVuBI4W5jw/pub?gid=0&single=true&output=csv';
@@ -67,6 +107,71 @@ export default function Portfolio() {
   const handleProfileSave = () => {
     setIsEditingProfile(false);
   };
+
+  // Calculate best and worst performers using FIFO
+  const getPerformers = () => {
+    // Group trades by symbol
+    const symbolTrades = trades.reduce((acc, trade) => {
+      if (!acc[trade.symbol]) {
+        acc[trade.symbol] = [];
+      }
+      acc[trade.symbol].push(trade);
+      return acc;
+    }, {});
+
+    const performanceArray = Object.entries(symbolTrades)
+      .map(([symbol, trades]) => {
+        // Sort buy trades by date for FIFO
+        const buyTrades = trades
+          .filter(t => t.type === 'buy')
+          .sort((a, b) => new Date(a.date) - new Date(b.date))
+          .map(t => ({ ...t, remainingQty: t.qty })); // Create copies with remaining quantity
+
+        // Process all sells
+        trades
+          .filter(t => t.type === 'sell')
+          .sort((a, b) => new Date(a.date) - new Date(b.date))
+          .forEach(sellTrade => {
+            let remainingToSell = sellTrade.qty;
+            let i = 0;
+
+            while (remainingToSell > 0 && i < buyTrades.length) {
+              const buyTrade = buyTrades[i];
+              if (buyTrade.remainingQty > 0) {
+                const qtyToDeduct = Math.min(buyTrade.remainingQty, remainingToSell);
+                buyTrade.remainingQty -= qtyToDeduct;
+                remainingToSell -= qtyToDeduct;
+              }
+              if (buyTrade.remainingQty === 0) {
+                i++;
+              }
+            }
+          });
+
+        // Calculate remaining position
+        const remainingBuyTrades = buyTrades.filter(t => t.remainingQty > 0);
+        if (remainingBuyTrades.length > 0) {
+          const totalQty = remainingBuyTrades.reduce((sum, trade) => sum + trade.remainingQty, 0);
+          const totalCost = remainingBuyTrades.reduce((sum, trade) => sum + (trade.remainingQty * trade.price), 0);
+          const avgCost = totalCost / totalQty;
+          const currentPrice = prices[symbol]?.price || 0;
+          const pnlPercentage = ((currentPrice - avgCost) / avgCost) * 100;
+          return { symbol, pnlPercentage };
+        }
+        return null;
+      })
+      .filter(item => item && item.pnlPercentage && !isNaN(item.pnlPercentage));
+
+    if (performanceArray.length === 0) return { best: null, worst: null };
+
+    const sorted = performanceArray.sort((a, b) => b.pnlPercentage - a.pnlPercentage);
+    return {
+      best: sorted[0],
+      worst: sorted.length === 1 ? null : sorted[sorted.length - 1]
+    };
+  };
+
+  const { best, worst } = getPerformers();
 
   return (
     <Container maxWidth="xl" sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -164,37 +269,73 @@ export default function Portfolio() {
               borderRadius: 2,
               bgcolor: 'rgba(255,255,255,0.05)',
             }}>
-              <Typography variant="subtitle2" color="text.secondary">All-time profit</Typography>
-              {/* Add your profit stats here */}
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                All-time profit
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {allTimeProfit >= 0 ? (
+                  <TrendingUpIcon sx={{ color: '#00e676' }} />
+                ) : (
+                  <TrendingDownIcon sx={{ color: '#ff1744' }} />
+                )}
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 600,
+                    color: allTimeProfit >= 0 ? '#00e676' : '#ff1744'
+                  }}
+                >
+                  {Math.abs(allTimeProfit).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                </Typography>
+              </Box>
             </Box>
             <Box sx={{ 
               p: 3, 
               borderRadius: 2,
               bgcolor: 'rgba(255,255,255,0.05)',
             }}>
-              <Typography variant="subtitle2" color="text.secondary">Cost Basis</Typography>
-              {/* Add your cost basis stats here */}
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                Best Performer
+              </Typography>
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  fontWeight: 600,
+                  color: '#E2E8F0',
+                  fontFamily: 'Inter, system-ui, sans-serif',
+                  letterSpacing: '0.5px'
+                }}
+              >
+                {best?.symbol || '—'}
+              </Typography>
             </Box>
             <Box sx={{ 
               p: 3, 
               borderRadius: 2,
               bgcolor: 'rgba(255,255,255,0.05)',
             }}>
-              <Typography variant="subtitle2" color="text.secondary">Best Performer</Typography>
-              {/* Add your best performer stats here */}
-            </Box>
-            <Box sx={{ 
-              p: 3, 
-              borderRadius: 2,
-              bgcolor: 'rgba(255,255,255,0.05)',
-            }}>
-              <Typography variant="subtitle2" color="text.secondary">Worst Performer</Typography>
-              {/* Add your worst performer stats here */}
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                Worst Performer
+              </Typography>
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  fontWeight: 600,
+                  color: '#E2E8F0',
+                  fontFamily: 'Inter, system-ui, sans-serif',
+                  letterSpacing: '0.5px'
+                }}
+              >
+                {worst?.symbol || '—'}
+              </Typography>
             </Box>
           </Box>
 
           <Box sx={{ mb: 4 }}>
-            <Holdings />
+            <Holdings onSell={(tradeDetails) => {
+              setSelectedStock(tradeDetails.symbol);
+              setIsTradeFormOpen(true);
+            }} />
           </Box>
 
           <Box>
