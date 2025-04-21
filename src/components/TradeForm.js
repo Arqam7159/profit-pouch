@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { TradesContext } from '../context/TradesContext';
 import { 
   Box, 
@@ -43,6 +43,15 @@ export default function TradeForm({ onClose, selectedStock: initialStock }) {
   const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuZLftP7d6Au5d4q7l_NV6oi_7oggj95LMfwZ2t_ZHWHTiKjRzZ7aRYxvvOJHeJk5scWyVuBI4W5jw/pub?gid=0&single=true&output=csv';
   const prices = useSheetPrices(sheetUrl, 60000);
   const availableSymbols = Object.keys(prices).sort();
+
+  // Set initial price when component mounts or initialStock changes
+  useEffect(() => {
+    if (initialStock && prices[initialStock]) {
+      setSelectedStock(initialStock);
+      setPrice(prices[initialStock].price.toString());
+      console.log('Setting initial price for:', initialStock, prices[initialStock].price);
+    }
+  }, [initialStock, prices]);
 
   const filteredStocks = availableSymbols.filter(symbol => 
     symbol.toLowerCase().includes(searchQuery.toLowerCase())
