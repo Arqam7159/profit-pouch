@@ -1,27 +1,43 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import { db } from '../firebase/config';
+import { doc, onSnapshot, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 
 const WatchlistContext = createContext();
 
 export function WatchlistProvider({ children }) {
-  const [watchlist, setWatchlist] = useState(() => {
-    try {
-      const stored = localStorage.getItem('watchlist');
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
+  const { user } = useAuth();
+  const [watchlist, setWatchlist] = useState([]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('watchlist', JSON.stringify(watchlist));
-    } catch {}
-  }, [watchlist]);
+    if (!user) {
+      setWatchlist([]);
+      return;
+    }
+    const docRef = doc(db, 'watchlists', user.uid);
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setWatchlist(docSnap.data().symbols || []);
+      } else {
+        setDoc(docRef, { symbols: [] });
+        setWatchlist([]);
+      }
+    });
+    return () => unsubscribe();
+  }, [user]);
 
-  const toggleWatchlist = (symbol) => {
-    setWatchlist((prev) =>
-      prev.includes(symbol) ? prev.filter((s) => s !== symbol) : [...prev, symbol]
-    );
+  const toggleWatchlist = async (symbol) => {
+    if (!user) return;
+    const docRef = doc(db, 'watchlists', user.uid);
+    try {
+      if (watchlist.includes(symbol)) {
+        await updateDoc(docRef, { symbols: arrayRemove(symbol) });
+      } else {
+        await updateDoc(docRef, { symbols: arrayUnion(symbol) });
+      }
+    } catch (err) {
+      console.error('Watchlist update failed:', err);
+    }
   };
 
   return (
