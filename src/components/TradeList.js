@@ -90,11 +90,12 @@ export default function TradeList() {
         id: trade.id,
         symbol: trade.symbol,
         type: trade.type,
-        qty: trade.qty
+        qty: trade.qty,
+        fullTrade: trade
       });
       
-      await deleteTrade(selectedTradeId);
-      console.log('Delete operation completed successfully');
+      const result = await deleteTrade(selectedTradeId);
+      console.log('Delete operation result:', result);
       
       setDeleteDialogOpen(false);
       setSelectedTradeId(null);

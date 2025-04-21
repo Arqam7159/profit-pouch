@@ -97,12 +97,15 @@ export function TradesProvider({ children }) {
 
     try {
       console.log('Starting delete operation for trade:', tradeId);
+      console.log('Current user:', user.uid);
       
       // Reference the trade document directly
       const tradeRef = doc(db, 'trades', tradeId);
+      console.log('Trade reference path:', tradeRef.path);
       
       // Get the trade document to verify it exists and belongs to the user
       const tradeDoc = await getDoc(tradeRef);
+      console.log('Trade document exists:', tradeDoc.exists());
       
       if (!tradeDoc.exists()) {
         console.error('Trade document not found:', tradeId);
@@ -110,6 +113,13 @@ export function TradesProvider({ children }) {
       }
       
       const tradeData = tradeDoc.data();
+      console.log('Trade data:', {
+        tradeId,
+        userId: tradeData.userId,
+        currentUser: user.uid,
+        matches: tradeData.userId === user.uid
+      });
+
       if (tradeData.userId !== user.uid) {
         console.error('Trade does not belong to current user');
         throw new Error('Unauthorized to delete this trade');
