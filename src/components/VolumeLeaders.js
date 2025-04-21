@@ -5,7 +5,6 @@ import {
   Paper,
   List,
   ListItem,
-  ListItemText,
   ListItemIcon,
   ListItemSecondaryAction,
   Stack,

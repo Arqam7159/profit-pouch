@@ -8,7 +8,6 @@ import {
   deleteDoc,
   doc,
   getDoc,
-  getDocs
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from './AuthContext';

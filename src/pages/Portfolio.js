@@ -17,8 +17,7 @@ import {
   ListItemText,
   ListItemIcon,
   InputBase,
-  InputAdornment,
-  Divider
+  InputAdornment
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
