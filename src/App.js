@@ -9,6 +9,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import { TradesProvider } from './context/TradesContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { WatchlistProvider } from './context/WatchlistContext';
+import Watchlist from './pages/Watchlist';
 
 const theme = createTheme({
   palette: {
@@ -124,18 +126,21 @@ function App() {
         <CssBaseline />
         <AuthProvider>
           <TradesProvider>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route element={
-                <RequireAuth>
-                  <Layout />
-                </RequireAuth>
-              }>
-                <Route index element={<VolumeLeaders />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-              </Route>
-            </Routes>
+            <WatchlistProvider>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route element={
+                  <RequireAuth>
+                    <Layout />
+                  </RequireAuth>
+                }>
+                  <Route index element={<VolumeLeaders />} />
+                  <Route path="/portfolio" element={<Portfolio />} />
+                  <Route path="/watchlist" element={<Watchlist />} />
+                </Route>
+              </Routes>
+            </WatchlistProvider>
           </TradesProvider>
         </AuthProvider>
       </ThemeProvider>

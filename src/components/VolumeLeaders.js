@@ -8,14 +8,21 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   Stack,
+  IconButton,
 } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 import useSheetPrices from '../hooks/useSheetPrices';
+import { useWatchlist } from '../context/WatchlistContext';
 
 export default function VolumeLeaders() {
   const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuZLftP7d6Au5d4q7l_NV6oi_7oggj95LMfwZ2t_ZHWHTiKjRzZ7aRYxvvOJHeJk5scWyVuBI4W5jw/pub?gid=0&single=true&output=csv';
   const prices = useSheetPrices(sheetUrl, 60000);
+
+  // Watchlist context
+  const { watchlist, toggleWatchlist } = useWatchlist();
 
   // Sort stocks by volume and take top 50
   const volumeLeaders = Object.entries(prices)
@@ -61,6 +68,17 @@ export default function VolumeLeaders() {
                 },
               }}
             >
+              {/* Star toggle */}
+              <ListItemIcon>
+                <IconButton onClick={() => toggleWatchlist(symbol)}>
+                  {watchlist.includes(symbol) ? (
+                    <StarIcon sx={{ color: 'gold' }} />
+                  ) : (
+                    <StarBorderIcon sx={{ color: 'rgba(255,255,255,0.3)' }} />
+                  )}
+                </IconButton>
+              </ListItemIcon>
+              {/* Change indicator */}
               <ListItemIcon>
                 {data.change >= 0 ? (
                   <TrendingUpIcon sx={{ color: '#00e676' }} />

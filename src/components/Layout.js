@@ -4,6 +4,7 @@ import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import LogoutIcon from '@mui/icons-material/Logout';
+import StarIcon from '@mui/icons-material/Star';
 import { useAuth } from '../context/AuthContext';
 
 const Logo = (props) => (
@@ -100,6 +101,12 @@ export default function Layout() {
               iconPosition="start"
               label="Portfolio" 
               value="/portfolio"
+            />
+            <Tab 
+              icon={<StarIcon />} 
+              iconPosition="start"
+              label="Watchlist" 
+              value="/watchlist"
             />
           </Tabs>
           <IconButton 
