@@ -9,6 +9,7 @@ ProfitPouch is a Stock Tracker application tailored for the Pakistan Stock Marke
 - Record and manage buy/sell transactions
 - Portfolio summary with current holdings
 - Responsive, modern UI built with Material UI
+- Containerized deployment with Docker
 
 ## Tech Stack
 
@@ -17,15 +18,18 @@ ProfitPouch is a Stock Tracker application tailored for the Pakistan Stock Marke
 - Firebase v11 (Authentication & Firestore)
 - React Router v7
 - Create React App (react-scripts)
+- Docker & Docker Compose
 
 ## Getting Started
 
+You can run this application either locally or using Docker.
+
 ### Prerequisites
 
-- Node.js (v16 or higher)
-- npm (v8 or higher)
+- Node.js (v16 or higher) and npm (v8 or higher) for local development
+- Docker and Docker Compose for containerized deployment
 
-### Installation
+### Local Installation
 
 ```bash
 # Clone the repository
@@ -35,6 +39,20 @@ cd profitpouch
 # Install dependencies
 npm install
 ```
+
+### Docker Deployment
+
+You can quickly run the application using Docker:
+
+```bash
+# Build and start the container
+docker-compose up -d
+
+# Stop the container
+docker-compose down
+```
+
+The application will be available at http://localhost:3001
 
 ### Firebase Configuration
 
@@ -68,19 +86,39 @@ In the project directory, you can run:
 
 ### Deployment
 
+#### Traditional Deployment
 After building, you can deploy the contents of the `build/` folder to any static hosting service (Netlify, Vercel, GitHub Pages, etc.).
+
+#### Docker Deployment
+For production deployment with Docker:
+
+```bash
+# Build the production image
+docker-compose build
+
+# Run in production mode
+docker-compose up -d
+```
 
 ## Folder Structure
 
 ```text
 src/
 ├── components/      # Reusable UI components
-├── context/         # React Context for auth and trades
-├── firebase/        # Firebase initialization and config
-├── hooks/           # Custom React hooks
-├── pages/           # Route-level pages (Login, Signup, Portfolio, etc.)
-├── assets/          # Static assets (SVGs, images)
-└── index.js         # Entry point
+├── context/        # React Context for auth and trades
+├── firebase/       # Firebase initialization and config
+├── hooks/          # Custom React hooks
+├── pages/          # Route-level pages (Login, Signup, Portfolio, etc.)
+├── assets/         # Static assets (SVGs, images)
+└── index.js        # Entry point
+```
+
+## Docker Configuration Files
+
+```text
+├── Dockerfile           # Multi-stage build configuration
+├── docker-compose.yml   # Container orchestration config
+└── .dockerignore       # Files excluded from Docker context
 ```
 
 ---
